@@ -16,6 +16,7 @@ class MainContent(UserControl):
             clip_behavior=ClipBehavior.HARD_EDGE,
         )
 
+
         super().__init__()
 
     def build(self):
