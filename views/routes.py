@@ -4,10 +4,15 @@ from views.profile_view import ProfileView
 from views.settings_view import SettingsView
 from views.data_view import DataView
 from views.home_view import HomeView
+from views.info_view import InfoView
+
+
 
 router = Router(DataStrategyEnum.QUERY)
 
 router.routes = {
   "/": IndexView,
   "/home": HomeView,
+  "/info": InfoView,
+
 }
