@@ -31,7 +31,7 @@ class RunningView(View):
             self.running = True   # Zet de running status op True
             self.paused = False   # Zet de pause status op False
             # Start hartslagmeting en BPM-detectie
-
+def
     def pause(self):
         """Pauzeert de running sessie."""
         if self.running:
