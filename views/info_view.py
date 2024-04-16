@@ -9,8 +9,6 @@ import mysql.connector
 
 def InfoView(router_data: Union[Router, str, None] = None):
     
-
-
     class MainContent(UserControl):
         def __init__(self):
             self.mydb = mysql.connector.connect(
@@ -42,20 +40,15 @@ def InfoView(router_data: Union[Router, str, None] = None):
             self.navbar()
             super().__init__()
 
-
-
-
         def navbar(self):
             items = []
-            label = ["Home", "Email", "Password", "Password"]
+            label = ["Home", "Email", "Password", "History"]  # Changed label to include "History"
 
             def create_content():
                 contents = []
-                for i in range(3):
+                for i in range(4):  # Changed range to 4 to include "History"
                     contents.append(Column(
                         alignment=MainAxisAlignment.CENTER,
-                        # alignment_cross=CrossAxisAlignment.CENTER,
-
                         spacing=0,
                         controls=[
                             Text(label[i], color="black", weight="bold", size=11),
@@ -87,7 +80,6 @@ def InfoView(router_data: Union[Router, str, None] = None):
 
             self.recent_activity_column.controls = items
 
-
         def build(self):
             items: list = [
                 Column(
@@ -102,9 +94,6 @@ def InfoView(router_data: Union[Router, str, None] = None):
             self.main_stack.controls = items
             self.body.content = self.main_stack
             return self.body
-
-
-
 
     content = MainContent()
     return content
