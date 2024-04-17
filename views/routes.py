@@ -5,6 +5,7 @@ from views.settings_view import SettingsView
 from views.data_view import DataView
 from views.home_view import HomeView
 from views.info_view import InfoView
+from views.history_view import HistoryView
 
 
 
@@ -14,5 +15,6 @@ router.routes = {
   "/": IndexView,
   "/home": HomeView,
   "/info": InfoView,
+  "/hisl": HistoryView,
 
 }

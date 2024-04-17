@@ -1,4 +1,5 @@
-def IndexView(router_data: Union[Router, str, None] = None):
+def IndexView(router_data: 'typing.Union[Router, str, None]' = None):
+
     class MainContent(UserControl):
         def __init__(self):
             self.mydb = mysql.connector.connect(
