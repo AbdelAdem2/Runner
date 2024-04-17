@@ -14,6 +14,7 @@ def main(page: ft.Page):
     page.add(
         router.body
     )
-    page.go('/')
+    page.go("/home")
+
 
 ft.app(target=main, assets_dir="assets")

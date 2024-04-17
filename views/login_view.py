@@ -7,7 +7,7 @@ from views.Router import Router, DataStrategyEnum
 from State import global_state, State
 import mysql.connector
 
-def IndexView(router_data: Union[Router, str, None] = None):
+def LoginView(router_data: Union[Router, str, None] = None):
     
 
 
@@ -40,73 +40,68 @@ def IndexView(router_data: Union[Router, str, None] = None):
             self.recent_activity_column = Column(scroll="hidden", expand=True)
 
             self.register_button = self.create_register_button()
-            self.text_fields = self.create_text_fields() 
-            self.register() 
+            self.text_fields = self.input_field() 
+            self.input_container() 
             super().__init__()
 
         def create_register_button(self):
             return Container(
                 width=260,
                 height=55,
-                bgcolor="#FF0000",  
+                bgcolor="#4169E1",  
                 padding=10,
                 border_radius=5,
+                disabled=True,
                 content=Column(
-                alignment=MainAxisAlignment.CENTER,
-                spacing=0,
-                controls=[
-                    Text("Register", color="black", weight="bold", size=11),
-                ],
+                    alignment=MainAxisAlignment.CENTER,
+                    spacing=0,
+                    controls=[
+                        Text("Login", color="black", weight="bold", size=11),
+                    ],
                 ),
-                on_click=self.handle_register_click
+                on_click=self.handle_register_click,
+                # on_hover=hover(
+                #     bgcolor="#6495ED",
+                #     transition=transition(duration=0.2),
+                # ),
             )
 
-        def create_text_fields(self):
+        def input_field(self):
             text_fields = []
 
-            label = ["Username", "Email", "Password"]
+            label = ["Email", "Password"]
             placeholders = ["Enter your username", "Enter your email", "Enter your password"]
 
-            for i in range(3):
+            for i in range(2):
                 text_field = TextField(
-                    border_color="transparent",
-                    bgcolor="transparent",
-                    height=20,
-                    width=200,
-                    text_size=12,
-                    content_padding=3,
-                    cursor_color="white",
-                    cursor_width=1,
+                    label=label[i],
+                    password=(i == 1),
+                    can_reveal_password=True,
+                    width=250,
+                    height=40,
+                    border_radius=5,
                     color="black",
-                    hint_style=TextStyle(
-                        size=11,
-                        color="gray",
-                    ),
                     on_change=self.handle_text_field_change,
                 )
-
+                
                 text_fields.append(text_field)
 
             return text_fields
 
-        def register(self):
-            label = ["Username", "Email", "Password"]
+        def input_container(self):
+            label = ["Email", "Password"]
 
             items = []
 
-            for i in range(3):
+            for i in range(2):
                 container = Container(
-                    width=260,
-                    height=55,
-                    bgcolor="#ffffff",
-                    padding=10,
-                    border_radius=5,  
+                    border_radius=5,
                     content=Column(
                         alignment=MainAxisAlignment.CENTER,
                         spacing=0,
                         controls=[
-                            Text(label[i], color="black", weight="bold", size=11),
-                            self.text_fields[i],
+                            Text(color="black", weight="bold", size=11),
+                            self.text_fields[i]
                         ],
                     ),
                 )
@@ -123,34 +118,24 @@ def IndexView(router_data: Union[Router, str, None] = None):
             self.update_register_button_color()
 
         def handle_register_click(self, sender):
-            username, email, password = self.get_register_info()
-            
-            if self.validate_input(username, email, password):
-                self.register_button.bgcolor = "#0000FF" 
-                print("Registration successful!")
-                self.page.go("/login")
-
-                
-                self.mycursor.execute("SELECT * FROM users WHERE name = %s OR email = %s", (username, email))
-                if self.mycursor.fetchone() is not None:
-                    print("Username or email already exists")
-                    self.page.go("/login")
-
+            email, password = self.get_register_info()
+            if self.validate_input(email, password):
+                # self.register_button.bgcolor = "#0000FF" 
+                print("Valid input")
+                self.mycursor.execute("SELECT * FROM users WHERE email = %s AND password = %s", (email, password))
+                myresult = self.mycursor.fetchall()
+                if len(myresult) == 1:
+                    print("Valid!")
+                    self.page.go("/home")
                 else:
-                    sql = "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)"
-                    val = (username, email, password)
-                    self.mycursor.execute(sql, val)
-                    self.mydb.commit()
-                    email = 1
-                    receiver_email = "pietermei29@gmail.com"
+                    print("Invalid")
+                    alert = Text("Geen geldige email en of wachtwoord", color="black", weight="bold", size=11)
+                    self.recent_activity_column.controls.append(alert)
+                    self.recent_activity_column.update()
 
-                    print(self.mycursor.rowcount, "record inserted.")
 
             else:
-                self.page.go("/login")
-
-                self.register_button.bgcolor = "#FF0000"  
-                print("Registration failed. Please check your input.")
+                print("Invalid input")
 
         def get_register_info(self):
             info = []
@@ -158,7 +143,7 @@ def IndexView(router_data: Union[Router, str, None] = None):
                 info.append(text_field.value)
             return info
 
-        def validate_input(self, username, email, password):
+        def validate_input(self, email, password):
             if len(password) < 6:
                 return False
             if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
@@ -166,14 +151,16 @@ def IndexView(router_data: Union[Router, str, None] = None):
             return True
 
         def update_register_button_color(self):
-            username, email, password = self.get_register_info()
-            if self.validate_input(username, email, password):
+            email, password = self.get_register_info()
+            if self.validate_input(email, password):
                 print ("Valid input")
-                self.register_button.bgcolor = "#0000FF"  
+                self.register_button.bgcolor = "#1E90FF"
+                self.register_button.disabled = False
             else:
                 print("Invalid input")
-                self.register_button.bgcolor = "#FF0000"  
-
+                self.register_button.bgcolor = "#4169E1" 
+            self.recent_activity_column.update() 
+                              
         def build(self):
             items: list = [
                 Column(
