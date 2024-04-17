@@ -1,23 +1,12 @@
-import re
-from typing import Union
-# import flet as ft
-import flet
-from flet import *
-from views.Router import Router, DataStrategyEnum
-from State import global_state, State
-import mysql.connector
-
-def IndexView(router_data: Union[Router, str, None] = None):
-    
-
+def IndexView(router_data: 'typing.Union[Router, str, None]' = None):
 
     class MainContent(UserControl):
         def __init__(self):
             self.mydb = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="run"
+                host="localhost",
+                user="root",
+                password="",
+                database="run"
             )
 
             self.mycursor = self.mydb.cursor()
@@ -25,7 +14,7 @@ def IndexView(router_data: Union[Router, str, None] = None):
                 width=270,
                 height=550,
                 border_radius=35,
-                border=border.all(5, colors.BLACK),
+                border=Border(all=5, color="black"),
                 padding=padding.only(left=15, top=25, right=15, bottom=10),
                 gradient=LinearGradient(
                     begin=alignment.top_center,
@@ -116,9 +105,6 @@ def IndexView(router_data: Union[Router, str, None] = None):
 
             self.recent_activity_column.controls = items
 
-
-            
-
         def handle_text_field_change(self, sender):
             self.update_register_button_color()
 
@@ -143,7 +129,6 @@ def IndexView(router_data: Union[Router, str, None] = None):
                     self.mydb.commit()
                     email = 1
                     receiver_email = "pietermei29@gmail.com"
-
                     print(self.mycursor.rowcount, "record inserted.")
 
             else:
@@ -189,31 +174,33 @@ def IndexView(router_data: Union[Router, str, None] = None):
             self.body.content = self.main_stack
             return self.body
 
+    class HistoryButton(UserControl):
+        def __init__(self):
+            super().__init__()
+            self.button = Button(
+                text="View History",
+                on_click=self.view_history
+            )
+            self.content = Container(
+                width=260,
+                height=55,
+                bgcolor="#00FF00",
+                padding=10,
+                border_radius=5,
+                content=self.button
+            )
 
-    # def main(page: Page):
-    #     # page settings
-    #     page.horizontal_alignment = CrossAxisAlignment.CENTER
-    #     page.vertical_alignment = MainAxisAlignment.CENTER
-    #     # page.padding = padding.only(right=100)
-    #     page.bgcolor = "#212328"
+        def view_history(self, sender):
+            # Navigeer naar de historiepagina
+            self.page.go("/history")
 
-    #     # create instances
-    #     main = MainContent()
-
-    #     # add controls
-    #     page.add(
-    #         Stack(
-    #             width=270,
-    #             height=550,
-    #             clip_behavior=ClipBehavior.HARD_EDGE,
-    #             controls=[main],
-    #         )
-    #     )
-
-    #     # refresh page
-    #     page.update()
+        def build(self):
+            return self.content
 
     content = MainContent()
+    history_button = HistoryButton()
+
+    # De knop voor het bekijken van de historie toevoegen aan de recent_activity_column
+    content.recent_activity_column.add_control(history_button)
+
     return content
-
-
